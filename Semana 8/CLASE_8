@@ -1,0 +1,77 @@
+﻿CREATE DATABASE FUNCIONES_TRIGGERS;
+
+CREATE TABLE USUARIOS(
+NOMBRE VARCHAR(10),
+CLAVE VARCHAR (10)
+);
+--FUNCION INSERTA DATOS EN LA TABLA USUARIOS
+create or replace function cargarusuarios() returns void
+as
+$$
+ insert into usuarios (nombre, clave) values ('Marcelo','Boca');
+ insert into usuarios (nombre, clave) values ('JuanPerez','Juancito');
+ insert into usuarios (nombre, clave) values ('Susana','River');
+ insert into usuarios (nombre, clave) values ('Luis','River');
+$$
+ language sql;
+ 
+--LLAMADA A LA FUNCION
+ select cargarusuarios();
+
+ SELECT * FROM USUARIOS;
+
+--TABLA LIBROS
+create table libros(
+  codigo serial,
+  titulo varchar(40) not null,
+  autor varchar(20) default 'Desconocido',
+  editorial varchar(20),
+  precio decimal(6,2),
+  primary key (codigo)
+ );
+ 
+--INSERTA EN LA TABLA LIBROS
+Insert into libros (titulo,autor,editorial,precio)
+  values('El aleph','Borges','Emece',25.33);
+Insert into libros (titulo,autor,editorial,precio)
+  values('Java en 10 minutos','Mario Molina','Siglo XXI',50.65);
+Insert into libros (titulo,autor,editorial,precio)
+  values('Alicia en el pais de las maravillas','Lewis Carroll','Emece',19.95);
+Insert into libros (titulo,autor,editorial,precio)
+  values('Alicia en el pais de las maravillas','Lewis Carroll','Planeta',15);
+Insert into libros (titulo,autor,editorial,precio)
+  values('BAlicia ','Lewis','Planeta',5);
+
+  
+--FUNCION DE CONSULTA QUE RECIBE UN PARAMETRO DE TIPO NUMERICO
+create or replace function retornarlibro(int) returns libros 
+ as
+ 'select * from libros where codigo=$1 ;'
+ language sql;
+
+--LLAMADA A LA FUNCION
+ select retornarlibro(3);
+
+ --FUNCIÓN QUE DEVUELVE UN TRIGGER 
+ Create or replace Function Mensaje () returns trigger
+ AS
+ $$
+ Begin
+
+Raise Notice 'Trigger llamado despues de una acción en la tabla %', TG_TABLE_NAME;
+return new;
+ End
+ $$
+Language 'plpgsql'
+
+Select * from libros
+
+--CREACIÓN DEL TRIGGER
+Create trigger TR_Mensaje1
+after insert 
+on libros
+For each row 
+Execute Procedure Mensaje(); 
+
+ 
+
